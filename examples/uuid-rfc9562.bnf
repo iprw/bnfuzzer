@@ -1,0 +1,4 @@
+UUID     = 4hexOctet "-" 2hexOctet "-" 2hexOctet "-" 2hexOctet "-" 6hexOctet
+hexOctet = HEXDIG HEXDIG
+DIGIT    = %x30-39
+HEXDIG   = DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
