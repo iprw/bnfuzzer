@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sort"
 	"time"
+	"strconv"
 )
 
 // TODO: limit the amount of loops
@@ -196,10 +197,11 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	filePath := flag.String("file", "", "Path to the BNF file")
 	entry := flag.String("entry", "", "The symbol name to start generating from. Passing '!' as the symbol name lists all of the available symbols in the -file.")
-	count := flag.Int("count", 1, "How many messages to generate")
-	verify := flag.Bool("verify", false, "Verify that all the symbols are defined")
-	unused := flag.Bool("unused", false, "Verify that all the symbols are used")
-	dump := flag.Bool("dump", false, "Dump the text representation of -entry symbol")
+	count := flag.Int("count", 1, "How many messages to generate.")
+	delim := flag.String("delim", "", "Message delimiter, that is what to separate generated messages with. Must be a valid double-quoted Go string literal. Examples: -delim '\"abc\"' or -delim '\"\\n\"'.")
+	verify := flag.Bool("verify", false, "Verify that all the symbols are defined.")
+	unused := flag.Bool("unused", false, "Verify that all the symbols are used.")
+	dump := flag.Bool("dump", false, "Dump the text representation of -entry symbol.")
 	flag.Parse()
 	if len(*filePath) == 0 {
 		fmt.Fprintf(os.Stderr, "ERROR: -file is not provided\n")
@@ -215,6 +217,14 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 		os.Exit(1)
+	}
+	unquotedDelim := ""
+	if len(*delim) > 0 {
+		unquotedDelim, err = strconv.Unquote(*delim)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "ERROR: %s: delimiter %s is an invalid double-quoted Go string literal. Examples: -delim '\"abc\"' or -delim '\"\\n\"'.\n", err, *delim)
+			os.Exit(1)
+		}
 	}
 	grammar := map[string]Rule{}
 	parsingError := false
@@ -383,5 +393,6 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Print(string(message))
+		fmt.Print(unquotedDelim)
 	}
 }
