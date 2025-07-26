@@ -228,6 +228,7 @@ func main() {
 	}
 	grammar := map[string]Rule{}
 	parsingError := false
+	// TODO: Support Newline within Expressions
 	for row, line := range strings.Split(string(content), "\n") {
 		lexer := NewLexer(line, *filePath, row)
 
